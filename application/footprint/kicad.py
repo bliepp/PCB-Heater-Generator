@@ -19,7 +19,7 @@ class KiCADFootprint():
     """
     name: str
     version: int
-    type: Literal["smd", "thorugh_hole"] = "smd"
+    type: Literal["smd", "through_hole"] = "smd"
     layer: str = "F.Cu"
     generator: str = "custom"
 
