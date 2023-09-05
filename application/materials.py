@@ -12,4 +12,4 @@ class Material():
 
 COPPER = Material("Copper", "Cu", resistivity=1.72e-8)
 
-ALL = [COPPER]
+ALL_MATERIALS = [COPPER]

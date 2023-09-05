@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass
 from functools import cached_property
 
@@ -11,7 +12,7 @@ class TraceCalculator():
     material: Material
     temperature_rise: float
     thickness: float
-    current: float
+    max_current: float
 
 
     @cached_property
@@ -24,7 +25,7 @@ class TraceCalculator():
         # IPC 2221 works in mils, so for the sake of simplicity we convert everthing
         # from mm to mils and back
         a, b, c = 0.048, 0.44, 0.735
-        w = (self.current/(a * self.temperature_rise**b))**(1/c) / (self.thickness*MM_TO_MILS) # in mils
+        w = (self.max_current/(a * self.temperature_rise**b))**(1/c) / (self.thickness*MM_TO_MILS) # in mils
         return w*MILS_TO_MM # in mm
 
 
@@ -38,7 +39,14 @@ class TraceCalculator():
         return resistance*area / self.material.resistivity * 1e3
 
 
-    def generate_serpentine(self, width: float, height: float, clearance: float, length: float) -> float:
+    def generate_serpentine(self, height: float, voltage: float, clearance: float, min_length: float) -> float:
         # TODO: Generate number of serpentines for given width and height and needed serpentine spacing
         delta = clearance + self.width
-        return delta
+        n = math.floor((min_length - delta)/(height + delta)) + 2
+        if n % 2 == 1:
+            n -= 1
+        length = n*(height + delta) - delta
+        resistance = self.resistance_from_length(length)
+        current = voltage / resistance
+        width = (n-1)*delta
+        return n, length, resistance, current, width + 2*clearance
