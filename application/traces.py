@@ -36,3 +36,9 @@ class TraceCalculator():
     def length_from_resistance(self, resistance: float) -> float:
         area = self.thickness*self.width*1e-6
         return resistance*area / self.material.resistivity * 1e3
+
+
+    def generate_serpentine(self, width: float, height: float, clearance: float, length: float) -> float:
+        # TODO: Generate number of serpentines for given width and height and needed serpentine spacing
+        delta = clearance + self.width
+        return delta

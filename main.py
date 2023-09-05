@@ -23,9 +23,9 @@ with st.sidebar:
     with st.expander("PCB Settings", True):
         material = st.selectbox("Material", materials.ALL, format_func=lambda o: o.name)
         thickness = st.selectbox("Thickness", [1, 2], format_func=lambda o: f"{o} oz/ft²")*0.035 # in mm
-        #col1, col2 = st.columns(2)
-        #pcb_width = col1.number_input("Width (mm)", 10.0, 400.0, 100.0, 5.0)
-        #pcb_height = col2.number_input("Height (mm)", 10.0, 400.0, 100.0, 5.0)
+        col1, col2 = st.columns(2)
+        pcb_width = col1.number_input("Width (mm)", 10.0, 400.0, 100.0, 5.0)
+        pcb_height = col2.number_input("Height (mm)", 10.0, 400.0, 100.0, 5.0)
 
     with st.expander("Trace Generation"):
         style = st.selectbox("Style", ["sharp", "classic", "round"], format_func=lambda o: o.capitalize())
@@ -43,5 +43,7 @@ col1.metric("Power", f"{Float(power_loss):!.1h}W")
 col2.metric("Electrical Resistance", f"{Float(resistance):!.2h}Ω")
 col3.metric("Trace Width", f"{trace.width:.4f} mm")
 col4.metric("Track Length", f"{track_length:.1f} mm")
+
+st.write(trace.generate_serpentine(pcb_width, pcb_height, clearance, track_length))
 
 st.download_button("Download KiCAD Footprint", bytes(), "footprint.kicad_mod")
