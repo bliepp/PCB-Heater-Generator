@@ -3,7 +3,6 @@ from prefixed import Float
 
 from application.materials import ALL_MATERIALS
 from application.traces import TraceCalculator
-from application.constants import MILS_TO_MM, MM_TO_MILS
 
 
 

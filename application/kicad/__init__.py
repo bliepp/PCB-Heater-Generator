@@ -1,4 +1,4 @@
-from typing import Literal, Union
+from typing import Literal
 from dataclasses import dataclass
 
 from sexpdata import dumps, String
