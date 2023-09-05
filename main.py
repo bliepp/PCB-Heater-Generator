@@ -18,7 +18,7 @@ with st.sidebar:
         col1, col2 = st.columns(2)
         voltage = col1.number_input("Voltage (V)", 1.0, 50.0, 12.0, 1.0)
         current = col2.number_input("Current (A)", 1.0, 36.0, 5.0, 1.0)
-        temperature_rise = st.number_input("Temperature Rise (°C)", 10.0, 300.0, 180.0, 10.0)
+        temperature_rise = st.number_input("Temperature Rise (°C)", 10.0, 500.0, 180.0, 10.0)
 
     with st.expander("PCB Settings", True):
         material = st.selectbox("Material", materials.ALL, format_func=lambda o: o.name)
