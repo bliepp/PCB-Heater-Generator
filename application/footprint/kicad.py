@@ -3,11 +3,7 @@ from dataclasses import dataclass
 
 from sexpdata import dumps, String
 
-
-
-__COORD = tuple[float|int, float|int]
-__POS = tuple[float|int, float|int] | tuple[float|int, float|int, float|int]
-
+from .types import COORD, POS
 
 
 @dataclass
@@ -28,7 +24,7 @@ class KiCADFootprint():
         self.__items = []
 
 
-    def add_text(self, text: str, at: "__POS", type: Literal["reference", "value", "user"] = "value", layer: str = "F.SilkS") -> None:
+    def add_text(self, text: str, at: POS, type: Literal["reference", "value", "user"] = "value", layer: str = "F.SilkS") -> None:
         self.__items.append(["fp_text",
             type, text,
             ["at", *at],
@@ -40,7 +36,7 @@ class KiCADFootprint():
         ])
 
 
-    def add_line(self, start: "__COORD", end: "__COORD", width: float, layer=None, type="default") -> None:
+    def add_line(self, start: COORD, end: COORD, width: float, layer=None, type="default") -> None:
         layer = layer or self.layer
 
         self.__items.append(["fp_line",
