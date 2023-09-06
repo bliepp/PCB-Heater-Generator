@@ -1,14 +1,19 @@
 import streamlit as st
 from prefixed import Float
 
+from application.constants import PAGE_TITLE, PAGE_LAYOUT
 from application.materials import ALL_MATERIALS
 from application.traces import TraceCalculator
 
 
 
 def main():
-    st.set_page_config(page_title="PCB Heater Generator", layout="wide")
-    st.title("PCB Heater Generator")
+    st.set_page_config(
+        page_title=PAGE_TITLE,
+        initial_sidebar_state="expanded",
+        layout=PAGE_LAYOUT,
+    )
+    st.title(PAGE_TITLE)
 
     with st.sidebar:
         with st.expander("General", expanded=True):
