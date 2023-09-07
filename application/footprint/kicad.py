@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from sexpdata import dumps, String
 
-from .types import COORD, POS
+from .types import COORD, POS, SIZE
 
 
 @dataclass
@@ -48,6 +48,29 @@ class KiCADFootprint():
             ],
             ["layer", String(layer)]
         ])
+
+
+    def add_rectangle(self, start: COORD, end: COORD, width: float, layer="F.SilkS", type="default") -> None:
+        self.__items.append(["fp_rect",
+            ["start", *start],
+            ["end", *end],
+            ["stroke",
+                ["width", width],
+                ["type", type],
+            ],
+            ["layer", layer],
+        ])
+
+    def add_smd_pad(self, number: str, ratio:float, position: POS, size: SIZE, layers=["F.Cu", "F.Paste", "F.Mask"]) -> None:
+        self.__items.append(["pad",
+            String(number), "smd", "roundrect",
+            ["at", *position],
+            ["size", *size],
+            ["layers", *layers],
+            ["roundrect_rratio", ratio],
+            ["thermal_bridge_angle", 45],
+        ])
+
 
 
     def evaluate(self) -> str:

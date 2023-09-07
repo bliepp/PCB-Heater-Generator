@@ -1,9 +1,47 @@
+from typing import TextIO, BinaryIO
+import io
+
 import streamlit as st
 from prefixed import Float
 
 from application.constants import PAGE_TITLE, PAGE_LAYOUT
 from application.materials import ALL_MATERIALS
 from application.traces import TraceCalculator
+from application.footprint import Footprint, KiCADFootprint
+
+
+
+def generate_serpentine(footprint: Footprint, n: int, clearance: float, pcb_height: float, width: float) -> bytes|str:
+    delta = width+clearance
+    inner_width = (n-1)*delta
+
+    # start line that brigeds the delta to serpentines
+    footprint.add_line((0, 0), (0, delta), width)
+
+    # vertical lines of serpentines
+    for i in range(n):
+        footprint.add_line((i*delta, delta), (i*delta, pcb_height - 2*clearance), width)
+
+    # horizontal lines of serpentines
+    for i in range(n-1):
+        upper = i % 2 == 1
+        y = upper*delta + (not upper)*(pcb_height-2*clearance)
+        footprint.add_line((i*delta, y), ((i+1)*delta, y), width)
+
+    # brigde from serpentines to end line
+    footprint.add_line((inner_width, delta), (inner_width, 0), width)
+
+    # end line
+    footprint.add_line((delta, 0), (inner_width, 0), width)
+
+    # pads
+    footprint.add_smd_pad("1", 0.25, (0, 0), (width, width))
+    footprint.add_smd_pad("2", 0.25, (delta, 0), (width, width))
+
+    # silkscreen
+    footprint.add_rectangle((-clearance, -clearance), (i*delta + 3*clearance, pcb_height - clearance), 1)
+
+    return footprint.evaluate()
 
 
 
@@ -31,7 +69,7 @@ def main():
     trace = TraceCalculator(material, temperature_rise, thickness, max_current)
 
     minimal_track_length = trace.length_from_resistance(voltage/max_current)
-    n, track_length, resistance, current, pcb_width = trace.generate_serpentine(
+    n, track_length, resistance, current, pcb_width = trace.serpentine_data(
         height=pcb_height - 2*clearance,
         voltage=voltage,
         clearance=clearance,
@@ -50,7 +88,8 @@ def main():
     col3.metric("PCB Width", f"{pcb_width:.1f} mm")
     col4.metric("PCB Height", f"{pcb_height:.1f} mm")
 
-    st.download_button("Download KiCAD Footprint", bytes(), "footprint.kicad_mod")
+    output = generate_serpentine(KiCADFootprint("heater", 20230907), n, clearance, pcb_height, trace.width)
+    st.download_button("Download KiCAD Footprint", output, "footprint.kicad_mod")
 
 
 
