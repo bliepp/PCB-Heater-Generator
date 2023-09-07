@@ -97,7 +97,8 @@ def main():
     st.download_button(
         "Download KiCAD Footprint",
         kicad_footprint(n, clearance, pcb_height, trace.width),
-        "footprint.kicad_mod"
+        "footprint.kicad_mod",
+        use_container_width=True,
     )
 
 
