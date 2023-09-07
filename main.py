@@ -39,7 +39,7 @@ def generate_serpentine(footprint: Footprint, n: int, clearance: float, pcb_heig
     footprint.add_smd_pad("2", 0.25, (delta, 0), (width, width))
 
     # silkscreen
-    footprint.add_rectangle((-clearance, -clearance), (i*delta + 3*clearance, pcb_height - clearance), 1)
+    footprint.add_rectangle((-clearance, -clearance), (i*delta + 3*clearance, pcb_height - clearance), 0.5)
 
     return footprint.evaluate()
 
