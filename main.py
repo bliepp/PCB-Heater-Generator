@@ -1,5 +1,5 @@
-from typing import TextIO, BinaryIO
-import io
+from datetime import date
+from functools import partial
 
 import streamlit as st
 from prefixed import Float
@@ -42,6 +42,12 @@ def generate_serpentine(footprint: Footprint, n: int, clearance: float, pcb_heig
     footprint.add_rectangle((-clearance, -clearance), (i*delta + 3*clearance, pcb_height - clearance), 1)
 
     return footprint.evaluate()
+
+
+
+kicad_footprint = partial(generate_serpentine, KiCADFootprint(
+        "heater", int(str(date.today()).replace("-", ""))
+    ))
 
 
 
@@ -88,8 +94,11 @@ def main():
     col3.metric("PCB Width", f"{pcb_width:.1f} mm")
     col4.metric("PCB Height", f"{pcb_height:.1f} mm")
 
-    output = generate_serpentine(KiCADFootprint("heater", 20230907), n, clearance, pcb_height, trace.width)
-    st.download_button("Download KiCAD Footprint", output, "footprint.kicad_mod")
+    st.download_button(
+        "Download KiCAD Footprint",
+        kicad_footprint(n, clearance, pcb_height, trace.width),
+        "footprint.kicad_mod"
+    )
 
 
 
