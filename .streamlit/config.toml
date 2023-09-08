@@ -1,0 +1,7 @@
+[browser]
+# Default: true
+gatherUsageStats = false
+
+[theme]
+base = "light"
+primaryColor = "green"
