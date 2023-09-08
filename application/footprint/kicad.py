@@ -1,5 +1,5 @@
-from typing import Literal
-from dataclasses import dataclass
+from typing import Literal, Sequence
+from dataclasses import dataclass, field
 
 from sexpdata import dumps, String
 
@@ -18,6 +18,7 @@ class KiCADFootprint():
     type: Literal["smd", "through_hole"] = "smd"
     layer: str = "F.Cu"
     generator: str = "custom"
+    net_ties: Sequence[str] = field(default_factory=list)
 
 
     def __post_init__(self) -> None:
@@ -81,4 +82,6 @@ class KiCADFootprint():
             ["layer", String("F.Cu")],
             ["attr", self.type, "exclude_from_pos_files", "exclude_from_bom"],
         ]
+        if self.net_ties:
+            items.append(["net_tie_pad_groups", *(String(g) for g in self.net_ties)])
         return dumps(items + self.__items, str_as="symbol")

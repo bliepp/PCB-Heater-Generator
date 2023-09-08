@@ -78,8 +78,10 @@ def generate_serpentine(footprint: Footprint, n: int, pcb_height: float, trace_w
 
 
 kicad_footprint = partial(generate_serpentine, KiCADFootprint(
-        "heater", int(str(date.today()).replace("-", ""))
-    ))
+    "heater",
+    int(str(date.today()).replace("-", "")),
+    net_ties=["1,2"],
+))
 
 
 
