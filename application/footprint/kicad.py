@@ -50,7 +50,7 @@ class KiCADFootprint():
         ])
 
 
-    def add_rectangle(self, start: COORD, end: COORD, width: float, layer="F.SilkS", type="default") -> None:
+    def add_rectangle(self, start: COORD, end: COORD, width: float, layer="F.SilkS", type="default", fill: bool = False) -> None:
         self.__items.append(["fp_rect",
             ["start", *start],
             ["end", *end],
@@ -58,6 +58,7 @@ class KiCADFootprint():
                 ["width", width],
                 ["type", type],
             ],
+            ["fill", "solid" if fill else "none"],
             ["layer", layer],
         ])
 
