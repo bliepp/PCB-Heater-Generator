@@ -11,32 +11,32 @@ from application.footprint import Footprint, KiCADFootprint
 
 
 
-def generate_serpentine(footprint: Footprint, n: int, clearance: float, pcb_height: float, width: float) -> bytes|str:
-    delta = width+clearance
+def generate_serpentine(footprint: Footprint, n: int, pcb_height: float, trace_width: float, clearance: float) -> bytes|str:
+    delta = trace_width+clearance
     inner_width = (n-1)*delta
 
     # start line that brigeds the delta to serpentines
-    footprint.add_line((0, 0), (0, delta), width)
+    footprint.add_line((0, 0), (0, delta), trace_width)
 
     # vertical lines of serpentines
     for i in range(n):
-        footprint.add_line((i*delta, delta), (i*delta, pcb_height - 2*clearance), width)
+        footprint.add_line((i*delta, delta), (i*delta, pcb_height - 2*clearance), trace_width)
 
     # horizontal lines of serpentines
     for i in range(n-1):
         upper = i % 2 == 1
         y = upper*delta + (not upper)*(pcb_height-2*clearance)
-        footprint.add_line((i*delta, y), ((i+1)*delta, y), width)
+        footprint.add_line((i*delta, y), ((i+1)*delta, y), trace_width)
 
     # brigde from serpentines to end line
-    footprint.add_line((inner_width, delta), (inner_width, 0), width)
+    footprint.add_line((inner_width, delta), (inner_width, 0), trace_width)
 
     # end line
-    footprint.add_line((delta, 0), (inner_width, 0), width)
+    footprint.add_line((delta, 0), (inner_width, 0), trace_width)
 
     # pads
-    footprint.add_smd_pad("1", 0.25, (0, 0), (width, width))
-    footprint.add_smd_pad("2", 0.25, (delta, 0), (width, width))
+    footprint.add_smd_pad("1", 0.25, (0, 0), (trace_width, trace_width))
+    footprint.add_smd_pad("2", 0.25, (delta, 0), (trace_width, trace_width))
 
     # silkscreen
     footprint.add_rectangle((-clearance, -clearance), (i*delta + 3*clearance, pcb_height - clearance), 0.5)
@@ -74,7 +74,8 @@ def main():
 
     trace = TraceCalculator(material, temperature_rise, thickness, max_current)
 
-    minimal_track_length = trace.length_from_resistance(voltage/max_current)
+    min_resistance = voltage/max_current
+    minimal_track_length = trace.length_from_resistance(min_resistance)
     n, track_length = trace.serpentine_data(
         height=pcb_height - 2*clearance,
         clearance=clearance,
@@ -87,7 +88,7 @@ def main():
 
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Power", f"{Float(voltage*current):!.1h}W", f"Max: {Float(max_current*voltage):!.1h}W", delta_color="off")
-    col2.metric("Electrical Resistance", f"{Float(resistance):!.2h}Ω", f"Min: {Float(voltage/max_current):!.2h}Ω", delta_color="off")
+    col2.metric("Electrical Resistance", f"{Float(resistance):!.2h}Ω", f"Min: {Float(min_resistance):!.2h}Ω", delta_color="off")
     col3.metric("Approx. Current", f"{Float(current):!.2h}A")
     col4.metric("Number of serpentines", n)
 
@@ -99,7 +100,7 @@ def main():
 
     st.download_button(
         "Download KiCAD Footprint",
-        kicad_footprint(n, clearance, pcb_height, trace.width),
+        kicad_footprint(n, pcb_height, trace.width, clearance),
         "footprint.kicad_mod",
         use_container_width=True,
     )
