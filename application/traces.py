@@ -39,13 +39,13 @@ class TraceCalculator():
         return resistance*area / self.material.resistivity * 1e3
 
 
-    def serpentine_data(self, height: float, voltage: float, clearance: float, min_length: float) -> float:
+    def serpentine_data(self, height: float, clearance: float, min_length: float) -> tuple[float, float]:
+        """
+        Calculate the necessary data to generate the heater's serpentine pattern.
+        """
         delta = clearance + self.width
         n = math.floor((min_length - delta)/(height + delta)) + 2
         if n % 2 == 1:
-            n -= 1
+            n -= 1 # make sure n is even
         length = n*(height + delta) - delta
-        resistance = self.resistance_from_length(length)
-        current = voltage / resistance
-        width = (n-1)*delta
-        return n, length, resistance, current, width + 2*clearance
+        return n, length

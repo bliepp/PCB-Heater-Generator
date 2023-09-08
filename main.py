@@ -75,12 +75,15 @@ def main():
     trace = TraceCalculator(material, temperature_rise, thickness, max_current)
 
     minimal_track_length = trace.length_from_resistance(voltage/max_current)
-    n, track_length, resistance, current, pcb_width = trace.serpentine_data(
+    n, track_length = trace.serpentine_data(
         height=pcb_height - 2*clearance,
-        voltage=voltage,
         clearance=clearance,
         min_length=minimal_track_length
     )
+    pcb_width = (n-1)*(clearance + trace.width) + 2*clearance
+
+    resistance = trace.resistance_from_length(track_length)
+    current = voltage/resistance
 
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Power", f"{Float(voltage*current):!.1h}W", f"Max: {Float(max_current*voltage):!.1h}W", delta_color="off")
