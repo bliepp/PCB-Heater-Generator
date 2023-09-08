@@ -40,7 +40,6 @@ class TraceCalculator():
 
 
     def serpentine_data(self, height: float, voltage: float, clearance: float, min_length: float) -> float:
-        # TODO: Generate number of serpentines for given width and height and needed serpentine spacing
         delta = clearance + self.width
         n = math.floor((min_length - delta)/(height + delta)) + 2
         if n % 2 == 1:
