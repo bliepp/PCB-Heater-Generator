@@ -15,31 +15,63 @@ def generate_serpentine(footprint: Footprint, n: int, pcb_height: float, trace_w
     delta = trace_width+clearance
     inner_width = (n-1)*delta
 
+    offset_x, offset_y = -inner_width/2, -(pcb_height - 2*clearance)/2
+
     # start line that brigeds the delta to serpentines
-    footprint.add_line((0, 0), (0, delta), trace_width)
+    footprint.add_line(
+        (offset_x, offset_y),
+        (offset_x, delta+offset_y),
+        trace_width,
+    )
 
     # vertical lines of serpentines
     for i in range(n):
-        footprint.add_line((i*delta, delta), (i*delta, pcb_height - 2*clearance), trace_width)
+        footprint.add_line(
+            (i*delta + offset_x, delta + offset_y),
+            (i*delta + offset_x, pcb_height - 2*clearance + offset_y),
+            trace_width,
+        )
 
     # horizontal lines of serpentines
     for i in range(n-1):
         upper = i % 2 == 1
         y = upper*delta + (not upper)*(pcb_height-2*clearance)
-        footprint.add_line((i*delta, y), ((i+1)*delta, y), trace_width)
+        footprint.add_line(
+            (i*delta + offset_x, y + offset_y),
+            ((i+1)*delta + offset_x, y + offset_y),
+            trace_width,
+        )
 
     # brigde from serpentines to end line
-    footprint.add_line((inner_width, delta), (inner_width, 0), trace_width)
+    footprint.add_line(
+        (inner_width + offset_x, delta + offset_y),
+        (inner_width + offset_x, offset_y),
+        trace_width,
+    )
 
     # end line
-    footprint.add_line((delta, 0), (inner_width, 0), trace_width)
+    footprint.add_line(
+        (delta + offset_x, offset_y),
+        (inner_width + offset_x, offset_y),
+        trace_width,
+    )
 
     # pads
-    footprint.add_smd_pad("1", 0.25, (0, 0), (trace_width, trace_width))
-    footprint.add_smd_pad("2", 0.25, (delta, 0), (trace_width, trace_width))
+    footprint.add_smd_pad("1", 0.25,
+        (offset_x, offset_y),
+        (trace_width, trace_width),
+    )
+    footprint.add_smd_pad("2", 0.25,
+        (delta + offset_x, offset_y),
+        (trace_width, trace_width),
+    )
 
     # silkscreen
-    footprint.add_rectangle((-clearance, -clearance), (i*delta + 3*clearance, pcb_height - clearance), 0.5)
+    footprint.add_rectangle(
+        (-clearance + offset_x, -clearance + offset_y),
+        (i*delta + 3*clearance + offset_x, pcb_height - clearance + offset_y),
+        0.5,
+    )
 
     return footprint.evaluate()
 
