@@ -103,10 +103,16 @@ def main():
         with st.expander("PCB Settings", True):
             material = st.selectbox("Material", ALL_MATERIALS, format_func=lambda o: o.name)
             thickness = st.selectbox("Thickness", [1, 2], format_func=lambda o: f"{o} oz/ft²")*0.035 # in mm
-            clearance = st.number_input("Clearance (mm)", 0.0, 10.0, 0.2, 0.1)
+            col1, col2 = st.columns(2)
+            spacing = col1.number_input("Min. Spacing (mm)", 0.0, 10.0, 0.2, 0.1)
+            min_clearance = col2.number_input("Min. Clearance (mm)", 0.0, 10.0, 0.2, 0.1)
             pcb_height = st.number_input("Height (mm)", 10.0, 400.0, 100.0, 5.0)
 
     trace = TraceCalculator(material, temperature_rise, thickness, max_current)
+
+    clearance = min_clearance
+    if spacing > min_clearance + trace.width:
+        clearance = spacing - trace.width
 
     min_resistance = voltage/max_current
     minimal_track_length = trace.length_from_resistance(min_resistance)
