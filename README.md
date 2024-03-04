@@ -4,6 +4,8 @@
 
 A streamlit based web app for generating serpentine patterned PCB traces for heating purposes.
 
+![Screenshot](screenshot.png)
+
 
 ## How to use
 Set the voltage and maximum current you work with as well as the temperature rise you aim for in the *General* section of the sidebar. The PCB settings should work with the default settings of most manufacturers (copper traces @ 1 oz/ft², 0.2 mm clearance) and will result in a PCB height of 100 mm (the width is created dynamically according to your input). If you aim for specific dimensions set the CPB height in the *PCB Settings* section of the sidebar and modify the settings until the width matches your needs.
